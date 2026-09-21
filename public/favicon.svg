@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Light background -->
+  <rect width="32" height="32" fill="#F5F5F5" rx="2"/>
+
+  <!-- Rounded square frame - dark blue stroke -->
+  <rect x="3" y="3" width="26" height="26" rx="4" ry="4"
+        fill="#FFFFFF" stroke="#024A9E" stroke-width="3"/>
+
+  <!-- Navigation arrow pointing top-right -->
+  <!-- Arrow shaft - diagonal from bottom-left to top-right -->
+  <path d="M 11 20 L 20 11"
+        stroke="#024A9E"
+        stroke-width="3"
+        stroke-linecap="square"
+        fill="none"/>
+
+  <!-- Arrow head - horizontal bar -->
+  <rect x="15" y="9" width="6" height="3" fill="#024A9E"/>
+
+  <!-- Arrow head - vertical bar -->
+  <rect x="19" y="9" width="3" height="6" fill="#024A9E"/>
+</svg>

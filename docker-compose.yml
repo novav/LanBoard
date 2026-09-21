@@ -1,0 +1,60 @@
+# =============================================================================
+# NavBox - Docker Compose
+#
+# 启动:
+#   1. 复制 .env.example 为 .env 并填写配置
+#   2. 设置管理员初始密码(必填, 通过 ADMIN_PASSWORD 注入)
+#   3. docker compose up -d --build
+#
+# 数据持久化:
+#   ./data 目录通过 volume 挂载到容器 /app/data,
+#   包含 SQLite 数据库 (navbox.db) 与上传文件 (uploads 软链接/同级)。
+#
+# 可选挂载(默认注释):
+#   - /var/run/docker.sock   : 启用 Docker 容器扫描
+#   - /etc/nginx             : 启用 Nginx 站点扫描
+#   风险提示: 挂载 docker.sock 等同于授予容器宿主机 Docker 管理权限,
+#             仅限可信环境;挂载 /etc/nginx 会暴露站点配置。
+# =============================================================================
+
+services:
+  navbox:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: navbox
+    restart: unless-stopped
+    # 复用 Docker 默认 bridge 网络, 避免 compose 新建 project 网络导致
+    # "all predefined address pools have been fully subnetted" 地址池耗尽错误
+    network_mode: bridge
+    ports:
+      # 外部端口从 .env 的 PORT 变量读取, 默认 3000
+      - "${PORT:-3000}:3000"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: "file:/app/data/navbox.db"
+      # 管理员初始密码(从 .env 读取, 容器启动时自动 seed)
+      ADMIN_PASSWORD: "${ADMIN_PASSWORD}"
+      # 管理员用户名(可选, 默认 admin)
+      ADMIN_USERNAME: admin
+      # NAS 地址(站点内链接展示用, 如未配置则使用本机)
+      # NAS_HOST: http://192.168.1.100
+    # 挂载说明:
+    #   - ./data        : SQLite 数据库 + 持久化数据(必选)
+    #   - ./uploads     : 用户上传的 favicon 等文件(可选,但推荐)
+    # 可选挂载(默认注释, 需要时取消注释并评估安全风险):
+    #   - docker.sock   : 启用 Docker 容器扫描;等价于授予容器宿主机 Docker 管理权限,仅限可信环境
+    #   - /etc/nginx    : 启用 Nginx 站点扫描;会暴露站点配置
+    #   - 自定义 Nginx/OpenResty 配置目录可挂载到 /openresty/conf.d:ro
+    volumes:
+      - ./data:/app/data
+      - ./uploads:/app/uploads
+    #   - /var/run/docker.sock:/var/run/docker.sock:ro   # 启用 Docker 容器扫描
+    #   - /etc/nginx:/etc/nginx:ro                       # 启用 Nginx 站点扫描
+    #   - /path/to/your/nginx/conf.d:/openresty/conf.d:ro  # 自定义 Nginx 配置
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 5s
+      start_period: 40s
+      retries: 3

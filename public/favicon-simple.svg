@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Simplified design for small sizes -->
+  <!-- Rounded square frame -->
+  <rect x="2" y="2" width="28" height="28" rx="6" ry="6"
+        fill="#FFFFFF" stroke="#0052D9" stroke-width="3"/>
+
+  <!-- Thick arrow pointing top-right -->
+  <path d="M 10 22 L 10 13 L 19 13 M 19 13 L 15 9 M 19 13 L 15 17"
+        stroke="#0052D9"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        fill="none"/>
+</svg>
